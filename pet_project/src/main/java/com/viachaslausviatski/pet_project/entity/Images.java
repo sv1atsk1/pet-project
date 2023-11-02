@@ -30,6 +30,6 @@ public class Images {
     @Column(name = "bytes", columnDefinition = "longblob")
     private byte[] bytes;
 
-    @ManyToOne(cascade = CascadeType.REFRESH,fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Event event;
 }

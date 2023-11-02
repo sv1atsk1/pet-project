@@ -1,6 +1,5 @@
 package com.viachaslausviatski.pet_project.entity;
 
-//import jakarta.persistence.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -42,6 +41,10 @@ public class Event {
     private List<Images> images = new ArrayList<>();
     private Long previewImageId;
     private LocalDateTime dateOfCreated;
+
+    @ManyToOne(cascade = CascadeType.REFRESH,fetch = FetchType.LAZY)
+    @JoinColumn
+    private User user;
 
     @PrePersist
     private void init() {

@@ -18,8 +18,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (userDetails == null) {
             throw new UsernameNotFoundException("User not found with email: " + email);
         }
-        // Добавьте логгирование, чтобы увидеть, какие данные возвращаются
-        // logger.info("User found: " + userDetails.getUsername());
         return userDetails;
     }
 }

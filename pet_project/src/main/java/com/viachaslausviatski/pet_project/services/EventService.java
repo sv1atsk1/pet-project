@@ -2,7 +2,9 @@ package com.viachaslausviatski.pet_project.services;
 
 import com.viachaslausviatski.pet_project.entity.Event;
 import com.viachaslausviatski.pet_project.entity.Images;
+import com.viachaslausviatski.pet_project.entity.User;
 import com.viachaslausviatski.pet_project.repositories.EventRepository;
+import com.viachaslausviatski.pet_project.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,18 +21,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventService {
 
-    @Autowired
     private final EventRepository eventRepository;
+
+    private final UserRepository userRepository;
     private List<Event> events = new ArrayList<>();
 
 
     public List<Event> listOfEvents(String description) {
-        List<Event> event = eventRepository.findAll();
-        if(description != null) return eventRepository.findByDescription(description);
+        if (description != null) return eventRepository.findByDescription(description);
         return eventRepository.findAll();
     }
 
-    public void saveEvent(Event event, MultipartFile file1, MultipartFile file2,MultipartFile file3) throws IOException {
+    public void saveEvent(Principal principal, Event event, MultipartFile file1, MultipartFile file2, MultipartFile file3) throws IOException {
+        event.setUser(getUserByPrincipal(principal));
         Images image1;
         Images image2;
         Images image3;
@@ -51,6 +55,11 @@ public class EventService {
         eventFromDB.setPreviewImageId(eventFromDB.getImages().get(0).getId());
         eventRepository.save(event);
     }
+    public User getUserByPrincipal(Principal principal)
+    {
+        if(principal == null) return new User();
+        return userRepository.findByEmail(principal.getName());
+    }
 
     private Images toImageEntity(MultipartFile file) throws IOException {
         Images image = new Images();
@@ -62,10 +71,19 @@ public class EventService {
         return image;
     }
 
-    public void deleteEvent(Long id){
-
-       eventRepository.deleteById(id);
-    }
+    public void deleteEvent(User user, Long id) {
+        Event event = eventRepository.findById(id)
+                .orElse(null);
+        if (event != null) {
+            if (event.getUser().getId().equals(user.getId())) {
+                eventRepository.delete(event);
+                log.info("Event with id = {} was deleted", id);
+            } else {
+                log.error("User: {} haven't this event with id = {}", user.getEmail(), id);
+            }
+        } else {
+            log.error("Event with id = {} is not found", id);
+        }    }
 
     public Event getEventById(Long id){
 

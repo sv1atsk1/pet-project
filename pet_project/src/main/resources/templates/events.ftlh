@@ -1,40 +1,45 @@
-<!DOCTYPE html>
-<html>
+<#import "blocks/template.ftlh" as t>
+<@t.template user>
+    <h1 style="text-align: center">Поиск ивентов</h1><hr>
+    <form method="get" action="/">
+        <div class="form-row">
+            <div class="form-group col-md-2">
+                <label for="searchCity">Тип ивента</label>
+                <select id="searchCity" class="form-control">
+                    <option value="">Тип не выбран</option>
+                    <option value="На улице">На улице</option>
+                    <option value="В здании">В здании</option>
+                    <option value="Не придумал">Не придумал</option>
+                </select>
+            </div>
+            <div class="form-group col-md-10">
+                <label for="searchWord">Поиск по объявлениям</label>
+                <input type="text" name="searchWord" value="Поиск не работает" class="form-control"
+<#--                <input type="text" name="searchWord" <#if searchWord??>value="${searchWord}"</#if> class="form-control"-->
+                       id="searchWord">
+            </div>
+            <button style="width: 100%" type="submit" class="btn btn-dark">Поиск</button>
+        </div>
+    </form>
+    <hr>
+    <div class="card-columns">
+        <#list events as event>
+            <a href="/event/${event.id}" class="event-link">
+                <div class="card text-white bg-dark my-3 event">
 
-<head>
-    <title>All Events</title>
-</head>
-<body>
-<h1>Hello,All Events | <a href="/login">Войти</a></h1><hr>
-<h4>Ивенты в Беларуси</h4>
-<form action="/" method = "get">
-    Поиск по названию ивента: <input type="text" name="description"><br>
-    <input type="submit" value="Поиск"/>
-</form>
-<#list events as event>
-    <div>
-        <p><b>${event.description}</b></p>
-        <p><b>${event.name}</b></p>
-        <p><b>${event.type}</b></p>
-        <p><b>${event.startDate}</b></p>
-        <p>${event.numberOfVisitors}| <a href = "/event/${event.id}">Подробнее...</a></p>
+                    <img src="/images/${event.previewImageId}"
+                         class="card-img-top">
+                    <div class="card-body">
+                        <h5 class="card-title">${event.description}</h5>
+                        <p class="card-text">${event.type}</p>
+                    </div>
+                    <div class="card-footer">
+                        ${event.numberOfVisitors} мест
+                    </div>
+                </div>
+            </a>
+        <#else>
+            <h1 style="text-align: center">Не найдено</h1>
+        </#list>
     </div>
-    <#else>
-    <h3>Ивентов нет</h3>
-</#list>
-<hr>
-<h3>Создать новый инвент</h3>
-<form action="/event/create" method="post" enctype="multipart/form-data">
-    Описание ивента: <input type="text" name="description"><br><br>
-    Название ивента: <input type="text" name="name"><br><br>
-    Тип ивента <input type="text" name="type"><br><br>
-    Дата начала ивента: <input type="text" name="startDate"><br><br>
-    Количество посетителей ивента: <input type="number" name="numberOfVisitors"><br><br>
-    Первая фотография: <input type="file" name="file1"/><br><br>
-    Вторая фотография: <input type="file" name="file2"/><br><br>
-    Третья фотография: <input type="file" name="file3"/><br><br>
-    <input type="submit" value="Добавить ивент"/>
-
-</form>
-</body>
-</html>
+</@t.template>

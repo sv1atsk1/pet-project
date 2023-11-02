@@ -8,9 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name ="users")
@@ -48,11 +46,16 @@ public class User implements UserDetails {
 
     private LocalDateTime dateOfCreated;
 
+    @OneToMany(cascade =  CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user")
+    private List<Event> events = new ArrayList<>();
+
     @PrePersist
     private void init(){
         dateOfCreated = LocalDateTime.now();
 
     }
+
+    public boolean isAdmin() {return roles.contains((Role.ROLE_ADMIN));}
 
     //security
     @Override
